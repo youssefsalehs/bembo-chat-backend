@@ -87,36 +87,42 @@ export const logout = (req, res) => {
 };
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic, bio, fullName } = req.body;
+    const { fullName, bio } = req.body;
     const userId = req.user._id;
+
     let uploadRes = {};
-    if (profilePic) {
-      uploadimage = await cloudinary.uploader.upload(profilePic, {
-        folder: "profile",
-      });
-      uploadRes.profilePic = uploadimage.secure_url;
+
+    if (req.file) {
+      const cloudinaryUpload = (buffer) =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "profile" },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            },
+          );
+          stream.end(buffer);
+        });
+
+      const result = await cloudinaryUpload(req.file.buffer);
+      uploadRes.profilePic = result.secure_url;
     }
-    if (fullName) {
-      uploadRes.fullName = fullName;
-    }
-    if (bio) {
-      uploadRes.bio = bio;
-    }
+
+    if (fullName) uploadRes.fullName = fullName;
+    if (bio) uploadRes.bio = bio;
+
     const updatedUser = await User.findByIdAndUpdate(userId, uploadRes, {
-      new: true,
+      returnDocument: "after",
     });
-    return res.status(200).json({
-      data: {
-        updatedUser,
-      },
-    });
+
+    res.status(200).json({ data: updatedUser });
   } catch (error) {
-    console.log("Error in update" + error.message);
-    return res.status(500).json({
-      message: "Internal server error",
-    });
+    console.error("UpdateProfile error:", error);
+    res.status(500).json({ message: error.message });
   }
 };
+
 export const check = async (req, res) => {
   try {
     res.status(200).json(req.user);

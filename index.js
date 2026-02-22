@@ -3,12 +3,12 @@ const app = express();
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.route.js";
-import msgRouter from "./routes/auth.route.js";
+import msgRouter from "./routes/message.route.js";
 import cors from "cors";
 import { connectDB } from "./lib/db.js";
 dotenv.config();
 connectDB();
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({

@@ -1,7 +1,10 @@
 import express from "express";
-
 import { protect } from "../middleware/protect.js";
-import { getUsers } from "../controllers/message.controller.js";
+import {
+  getMsgs,
+  getUsers,
+  sendMsg,
+} from "../controllers/message.controller.js";
 const router = express.Router();
 router.get("/users", protect, getUsers);
 router.get("/:id", protect, getMsgs);

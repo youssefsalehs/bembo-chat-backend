@@ -1,13 +1,14 @@
-import cloudinary from "../lib/cloudinary";
+import cloudinary from "../lib/cloudinary.js";
 import Message from "../models/message.model.js";
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 
 export const getUsers = async (req, res) => {
   try {
     const loggedUserId = req.user._id;
     const users = await User.find({ _id: { $ne: loggedUserId } });
+    return res.status(200).json({ data: users });
   } catch (error) {
-    console.log("Error in getting users" + error.message);
+    console.log("Error in getting users: " + error.message);
     return res.status(500).json({
       message: "Internal server error",
     });
@@ -17,7 +18,7 @@ export const getMsgs = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
     const myId = req.user._id;
-    const msgs = await MessageChannel.find({
+    const msgs = await Message.find({
       $or: [
         { senderId: myId, recieverId: userToChatId },
         { senderId: userToChatId, recieverId: myId },
