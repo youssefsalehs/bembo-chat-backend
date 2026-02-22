@@ -20,8 +20,8 @@ export const getMsgs = async (req, res) => {
     const myId = req.user._id;
     const msgs = await Message.find({
       $or: [
-        { senderId: myId, recieverId: userToChatId },
-        { senderId: userToChatId, recieverId: myId },
+        { senderId: myId, receiverId: userToChatId },
+        { senderId: userToChatId, receiverId: myId },
       ],
     });
     return res.status(200).json({ data: msgs });
@@ -34,23 +34,41 @@ export const getMsgs = async (req, res) => {
 };
 export const sendMsg = async (req, res) => {
   try {
-    const { text, image } = req.body;
-    const { id: recieverId } = req.params;
+    const { text } = req.body;
+    const { id: receiverId } = req.params;
     const senderId = req.user._id;
-    let imageUrl;
-    if (image) {
-      const uploadResponse = await cloudinary.uploader.upload(image);
-      imageUrl = uploadResponse.secure_url;
+
+    let imageUrls = [];
+
+    const cloudinaryUpload = (buffer) =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "messages" },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        );
+        stream.end(buffer);
+      });
+
+    if (req.files && req.files.length > 0) {
+      const uploads = req.files.map((file) => cloudinaryUpload(file.buffer));
+
+      const results = await Promise.all(uploads);
+      imageUrls = results.map((r) => r.secure_url);
     }
+
     const newMsg = await Message.create({
       senderId,
-      recieverId,
+      receiverId,
       text,
-      image: imageUrl,
+      images: imageUrls,
     });
+
     return res.status(201).json({ data: newMsg });
   } catch (error) {
-    console.log("Error in sending message " + error.message);
+    console.log("Error in sending message:", error.message);
     return res.status(500).json({
       message: "Internal server error",
     });

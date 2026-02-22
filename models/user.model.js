@@ -13,7 +13,13 @@ const userSchema = new mongoose.Schema(
     },
     profilePic: {
       type: String,
-      default: "",
+      default:
+        "https://res.cloudinary.com/dlnhmifmn/image/upload/v1771801077/default_hjbe68.jpg",
+    },
+    coverPic: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/dlnhmifmn/image/upload/v1771801386/pexels-joyston-judah-331625-933054_zhhyk7.jpg",
     },
     bio: { type: String, default: "" },
   },

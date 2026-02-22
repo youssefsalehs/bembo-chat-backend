@@ -92,21 +92,32 @@ export const updateProfile = async (req, res) => {
 
     let uploadRes = {};
 
-    if (req.file) {
-      const cloudinaryUpload = (buffer) =>
-        new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder: "profile" },
-            (error, result) => {
-              if (error) return reject(error);
-              resolve(result);
-            },
-          );
-          stream.end(buffer);
-        });
+    const cloudinaryUpload = (buffer, folder) =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        );
+        stream.end(buffer);
+      });
 
-      const result = await cloudinaryUpload(req.file.buffer);
+    if (req.files?.profilePic) {
+      const result = await cloudinaryUpload(
+        req.files.profilePic[0].buffer,
+        "profile",
+      );
       uploadRes.profilePic = result.secure_url;
+    }
+
+    if (req.files?.coverPic) {
+      const result = await cloudinaryUpload(
+        req.files.coverPic[0].buffer,
+        "cover",
+      );
+      uploadRes.coverPic = result.secure_url;
     }
 
     if (fullName) uploadRes.fullName = fullName;
