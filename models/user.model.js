@@ -8,14 +8,14 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      minLength: 8,
-      required: true,
+      required: [true, "password is required"],
+      select: false,
     },
     profilePic: {
       type: String,
       default: "",
     },
-    bio: String,
+    bio: { type: String, default: "" },
   },
   { timestamps: true },
 );
