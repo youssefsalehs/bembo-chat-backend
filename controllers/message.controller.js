@@ -1,11 +1,14 @@
 import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
-
 export const getUsers = async (req, res) => {
   try {
     const loggedUserId = req.user._id;
-    const users = await User.find({ _id: { $ne: loggedUserId } });
+    const users = await User.find({ _id: { $ne: loggedUserId } }).sort({
+      fullName: 1,
+      createdAt: -1,
+    });
     return res.status(200).json({ data: users });
   } catch (error) {
     console.log("Error in getting users: " + error.message);
@@ -65,6 +68,12 @@ export const sendMsg = async (req, res) => {
       text,
       images: imageUrls,
     });
+    const receiverIdSocket = getReceiverSocketId(receiverId);
+    const senderSocketId = getReceiverSocketId(senderId);
+    io.to(receiverIdSocket).emit("newMessage", newMsg);
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("newMessage", newMsg);
+    }
 
     return res.status(201).json({ data: newMsg });
   } catch (error) {
