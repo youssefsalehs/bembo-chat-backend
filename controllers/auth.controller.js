@@ -87,7 +87,7 @@ export const logout = (req, res) => {
 };
 export const updateProfile = async (req, res) => {
   try {
-    const { fullName, bio } = req.body;
+    const { fullName, bio, theme } = req.body;
     const userId = req.user._id;
 
     let uploadRes = {};
@@ -119,10 +119,9 @@ export const updateProfile = async (req, res) => {
       );
       uploadRes.coverPic = result.secure_url;
     }
-
     if (fullName) uploadRes.fullName = fullName;
     if (bio) uploadRes.bio = bio;
-
+    if (theme) uploadRes.theme = theme;
     const updatedUser = await User.findByIdAndUpdate(userId, uploadRes, {
       returnDocument: "after",
     });

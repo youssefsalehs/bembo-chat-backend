@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema(
       default:
         "https://res.cloudinary.com/dlnhmifmn/image/upload/v1771801386/pexels-joyston-judah-331625-933054_zhhyk7.jpg",
     },
+    theme: {
+      type: String,
+      default: "",
+    },
     bio: { type: String, default: "" },
   },
   { timestamps: true },
