@@ -1,11 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import authRouter from "../routes/auth.route.js";
-import msgRouter from "../routes/message.route.js";
+import authRouter from "./routes/auth.route.js";
+import msgRouter from "./routes/message.route.js";
 import cors from "cors";
-import { connectDB } from "../lib/db.js";
-import { app, server } from "../lib/socket.js";
+import { connectDB } from "./lib/db.js";
+import { app, server } from "./lib/socket.js";
 dotenv.config();
 connectDB();
 app.use(express.json({ limit: "10mb" }));
