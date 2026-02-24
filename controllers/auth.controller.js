@@ -47,10 +47,11 @@ export const login = catchAsync(async (req, res, next) => {
   return res.status(200).json({ data: user });
 });
 export const logout = (req, res) => {
+  const isProduction = process.env.NODE_ENV === "production";
   res.clearCookie("jwt", {
     httpOnly: true,
-    sameSite: "none",
-    secure: process.env.NODE_ENV !== "development",
+    sameSite: isProduction ? "none" : "strict",
+    secure: isProduction,
   });
 
   res.status(200).json({ message: "Logged out successfully" });
