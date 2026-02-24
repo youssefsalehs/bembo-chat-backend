@@ -16,7 +16,13 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: "https://bembo-chat-frontend.vercel.app",
-
+    credentials: true,
+  }),
+);
+app.options(
+  "*",
+  cors({
+    origin: "https://bembo-chat-frontend.vercel.app",
     credentials: true,
   }),
 );
