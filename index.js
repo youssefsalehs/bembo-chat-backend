@@ -19,13 +19,6 @@ app.use(
     credentials: true,
   }),
 );
-app.options(
-  "*",
-  cors({
-    origin: "https://bembo-chat-frontend.vercel.app",
-    credentials: true,
-  }),
-);
 app.get("/", (req, res) => {
   res.status(200).send("API is running");
 });
