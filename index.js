@@ -12,6 +12,7 @@ dotenv.config();
 connectDB();
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
+
 app.use(
   cors({
     origin: [
@@ -21,7 +22,9 @@ app.use(
     credentials: true,
   }),
 );
-
+app.use("/", (req, res) => {
+  res.status(200).send("API is running");
+});
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/message", msgRouter);
 app.use((req, res, next) => {
